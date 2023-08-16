@@ -4,6 +4,53 @@ const cells = [];
 const grid = Array.from({ length: gridSize }, () => Array(gridSize).fill(0));
 let score = 0;
 
+function isGameOver() {
+  for (let row = 0; row < gridSize; row++) {
+    for (let col = 0; col < gridSize; col++) {
+      if (grid[row][col] === 0) {
+        return false; // Todavía hay celdas vacías, el juego no ha terminado
+      }
+      if (
+        isValidPosition(row + 1, col) && grid[row][col] === grid[row + 1][col] ||
+        isValidPosition(row, col + 1) && grid[row][col] === grid[row][col + 1]
+      ) {
+        return false; // Todavía hay movimientos posibles
+      }
+    }
+  }
+  return true; // No hay movimientos posibles, el jugador perdió
+}
+
+function showGameOverMessage() {
+  const gameOverMessage = document.createElement('div');
+  gameOverMessage.className = 'game-over-message';
+  gameOverMessage.textContent = 'Game Over. ¿Quieres jugar de nuevo?';
+
+  const retryButton = document.createElement('button');
+  retryButton.textContent = 'Reintentar';
+  retryButton.addEventListener('click', () => {
+    resetGame();
+    gameOverMessage.remove();
+  });
+
+  gameOverMessage.appendChild(retryButton);
+
+  document.body.appendChild(gameOverMessage);
+}
+
+function resetGame() {
+  cells.forEach(cell => {
+    cell.querySelector('span').textContent = '';
+  });
+
+  grid.forEach(row => row.fill(0));
+
+  score = 0;
+  updateDisplay();
+  generateRandomTile();
+  generateRandomTile();
+}
+
 function initializeGame() {
   const gameContainer = document.querySelector('.game-container');
 
